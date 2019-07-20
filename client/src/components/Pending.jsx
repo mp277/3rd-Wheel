@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useState} from 'react';
+import axios from 'axios';
 import Container from 'react-bootstrap/Container';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
@@ -7,8 +8,26 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import ListGroupItem from 'react-bootstrap/ListGroupItem';
 import inbound from '../../../test-data/inbound';
 import outbound from '../../../test-data/outbound';
+import Alert from 'react-bootstrap/Alert';
 
-const Pending = () => {
+const Pending = (props) => {
+  const [out, newOuts] = useState([]);
+  const [inc, newIns] = useState([]);
+
+  function getPending() {
+    return axios.get('/matches/inbound', {
+      userId: props.userId,
+      userStatus: props.userStatus,
+    })
+    .then((res) => {
+      newIns(res.data)
+    }).catch((err) => {
+      console.error(err);
+      return (
+        <Alert variant="danger" dismissible>There was an error! Please try again later.</Alert>
+      )
+    })
+  }
   
   function lister(userArray) {
     let i = 0;
@@ -17,7 +36,7 @@ const Pending = () => {
       <ListGroupItem key={(++i).toString()}>
       <Toast>
         <Toast.Header>
-              <img src={user.img} height="300px" width="340" className="avatar" alt="https://previews.123rf.com/images/panyamail/panyamail1809/panyamail180900343/109879063-user-avatar-icon-sign-profile-symbol.jpg" />
+              <img src={user.img} height="300px" width="340" className="avatar" alt="No Image Found" />
           
         </Toast.Header>
         <Toast.Body>
